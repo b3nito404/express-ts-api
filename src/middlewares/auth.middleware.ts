@@ -11,15 +11,13 @@ interface JwtPayload {
   exp: number;
 }
 
-declare global {
-  namespace Express {
-    interface Request {
-      user?: {
-        id: string;
-        role: UserRole;
-        email: string;
-      };
-    }
+declare module 'express-serve-static-core' {
+  interface Request {
+    user?: {
+      id: string;
+      role: UserRole;
+      email: string;
+    };
   }
 }
 
@@ -33,8 +31,8 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
 
     const token = authHeader.split(' ')[1];
     const decoded = jwt.verify(token, config.jwt.secret) as JwtPayload;
-
     const user = await userRepository.findById(decoded.id);
+
     if (!user || !user.isActive) {
       sendUnauthorized(res, 'User not found or inactive');
       return;
@@ -59,10 +57,12 @@ export const authorize = (...roles: UserRole[]) => {
       sendUnauthorized(res);
       return;
     }
+
     if (!roles.includes(req.user.role)) {
       sendForbidden(res, 'You do not have permission to perform this action');
       return;
     }
+
     next();
   };
 };

@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import healthService from '../services/health.service';
-import { sendSuccess, sendError } from '../utils/apiResponse';
+import { sendSuccess } from '../utils/apiResponse';
 
 class HealthController {
   async getStatus(req: Request, res: Response, next: NextFunction): Promise<void> {
