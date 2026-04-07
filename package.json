@@ -1,18 +1,63 @@
 {
-  "name": "express-typescript-api",
+  "name": "express-jenkins-starter",
   "version": "1.0.0",
-  "description": "Production-ready REST API with TypeScript, Express, Docker and Jenkins CI/CD",
+  "description": "Express + TypeScript REST API boilerplate with Jenkins CI/CD pipeline, Docker, MongoDB, JWT auth and Jest  production-ready in minutes.",
+  "keywords": [
+    "express",
+    "typescript",
+    "jenkins",
+    "ci-cd",
+    "pipeline",
+    "docker",
+    "mongodb",
+    "jwt",
+    "rest-api",
+    "boilerplate",
+    "starter",
+    "jest",
+    "rbac",
+    "helmet",
+    "rate-limiting",
+    "mongoose",
+    "nodejs",
+    "backend",
+    "devops",
+    "winston"
+  ],
+  "author": "TonNom <tonemail@example.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ton-compte/express-typescript-api"
+  },
+  "homepage": "https://github.com/ton-compte/express-typescript-api#readme",
+  "bugs": {
+    "url": "https://github.com/ton-compte/express-typescript-api/issues"
+  },
+  "engines": {
+    "node": ">=20"
+  },
   "main": "dist/server.js",
+  "types": "dist/server.d.ts",
+  "files": [
+    "dist",
+    "scripts",
+    ".env.example",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
+    "prebuild": "rm -rf dist",
     "build": "tsc",
     "start": "node dist/server.js",
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
-    "test": "jest --coverage",
+    "test": "jest --coverage --forceExit",
     "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage --forceExit",
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint src/**/*.ts --fix",
     "seed": "ts-node scripts/seed.ts",
-    "test:coverage": "jest --coverage --forceExit"
+    "prepublishOnly": "npm run lint && npm run build && npm test"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

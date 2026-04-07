@@ -1,58 +1,27 @@
-# Express TypeScript REST API
+# express-jenkins-starter
 
-Production-ready REST API built with **TypeScript**, **Express**, **MongoDB**, tested with **Jest**, Dockerized, and integrated into a **Jenkins CI/CD pipeline**.
+![npm](https://img.shields.io/npm/v/express-jenkins-starter?style=flat-square&color=CB3837)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=flat-square&logo=typescript&logoColor=white)
+![Express](https://img.shields.io/badge/Express-4.x-000000?style=flat-square&logo=express&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-ready-2496ED?style=flat-square&logo=docker&logoColor=white)
+![Jenkins](https://img.shields.io/badge/Jenkins-CI%2FCD-D24939?style=flat-square&logo=jenkins&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-7.0-47A248?style=flat-square&logo=mongodb&logoColor=white)
+![Jest](https://img.shields.io/badge/Jest-tested-C21325?style=flat-square&logo=jest&logoColor=white)
+![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)
 
+Production-ready REST API in **TypeScript** with **Express**, tested, **Dockerized**, and integrated into a CI/CD pipeline with **Jenkins**.
 ---
 
-## Architecture
+## Features
 
-```
-├── docker/
-│   ├── Dockerfile.dev         # Dev image with hot reload
-│   └── mongo-init.js          # MongoDB initialization
-├── scripts/
-│   ├── seed.ts                # Database seeder
-│   └── healthcheck.sh         # Shell health check
-├── src/
-│   ├── config/                # Centralized configuration
-│   ├── controllers/           # Request handlers (thin layer)
-│   ├── dtos/                  # Data Transfer Objects & interfaces
-│   ├── middlewares/           # Auth, validation, error handling
-│   ├── models/                # Mongoose schemas
-│   ├── repositories/          # Data access layer
-│   ├── routes/                # Route definitions with validation
-│   ├── services/              # Business logic layer
-│   ├── utils/                 # Logger, API response helpers
-│   ├── app.ts                 # Express app setup
-│   └── server.ts              # Entry point + graceful shutdown
-├── tests/
-│   ├── setup.ts               # Jest global setup
-│   ├── helpers.ts             # Shared test utilities
-│   ├── health.test.ts         # Health endpoint tests
-│   └── user.test.ts           # User CRUD + auth tests
-├── Dockerfile                 # Multi-stage production build
-├── docker-compose.yml         # Dev stack (API + MongoDB + Mongo Express)
-├── docker-compose.prod.yml    # Production overrides
-├── Jenkinsfile                # CI/CD pipeline (10 stages)
-└── jest.config.ts             # Jest + coverage configuration
-```
-
----
-
-## Tech Stack
-
-| Layer | Technology |
-|---|---|
-| Runtime | Node.js 20 + TypeScript 5 |
-| Framework | Express 4 |
-| Database | MongoDB 7 + Mongoose 8 |
-| Auth | JWT (jsonwebtoken) + bcryptjs |
-| Validation | express-validator |
-| Security | Helmet, CORS, express-rate-limit |
-| Logging | Winston |
-| Testing | Jest + Supertest |
-| Container | Docker (multi-stage) + Docker Compose |
-| CI/CD | Jenkins declarative pipeline |
+- JWT authentication + role-based access control (`admin` / `user`)
+- Layered architecture : Routes -> Controllers -> Services -> Repositories -> Models
+- Dockerized with multi-stage build + Docker Compose
+- 10-stage Jenkins declarative pipeline with manual approval gate
+- Jest test suite 25+ cases, 80% coverage enforced in CI
+- Helmet, CORS, rate limiting, bcrypt (12 rounds)
+- Graceful shutdown on SIGTERM/SIGINT
+- Consistent JSON envelope on all responses
 
 ---
 
@@ -61,40 +30,37 @@ Production-ready REST API built with **TypeScript**, **Express**, **MongoDB**, t
 ### Prerequisites
 
 - Node.js 20+
-- MongoDB running locally, or use Docker Compose
-
-### Local Development
+- MongoDB locally or via Docker
 
 ```bash
-# 1. Clone and install
+# Install
 npm ci
 
-# 2. Configure environment
+# Configure
 cp .env.example .env
-# Edit .env with your values
 
-# 3. Start MongoDB (if not running)
+# Start MongoDB (if not running)
 docker run -d -p 27017:27017 --name mongo mongo:7.0-jammy
 
-# 4. Seed the database (optional)
+# Seed (optional)
 npx ts-node scripts/seed.ts
 
-# 5. Start dev server (hot reload)
+# Dev server (hot reload)
 npm run dev
 ```
 
-API available at `http://localhost:3000/api/v1`
+API -> `http://localhost:3000/api/v1`
 
-### Docker Compose (recommended)
+### Docker Compose
 
 ```bash
-# Start full stack (API + MongoDB)
+# Full stack (API + MongoDB)
 docker-compose up -d
 
-# With Mongo Express UI on port 8081
+# With Mongo Express UI (port 8081)
 docker-compose --profile tools up -d
 
-# View logs
+# Logs
 docker-compose logs -f api
 
 # Stop
@@ -104,10 +70,9 @@ docker-compose down
 ### Production
 
 ```bash
-# Build and start production stack
 docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 
-# Or build image manually
+# Or manually
 docker build -t express-api:latest .
 docker run -p 3000:3000 --env-file .env express-api:latest
 ```
@@ -132,92 +97,67 @@ docker run -p 3000:3000 --env-file .env express-api:latest
 
 ## API Reference
 
-### Base URL
+Base URL: `http://localhost:3000/api/v1`
 
-```
-http://localhost:3000/api/v1
-```
-
-### Health Endpoints
+### Health
 
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
-| GET | `/health` | None | Full health status (DB, memory, system) |
+| GET | `/health` | None | Full status (DB, memory, system) |
 | GET | `/health/live` | None | Liveness probe |
 | GET | `/health/ready` | None | Readiness probe |
 
-### User Endpoints
+### Users
 
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
-| POST | `/users/register` | None | Register new user |
-| POST | `/users/login` | None | Login, returns JWT |
-| GET | `/users/me` | Bearer | Get own profile |
-| PATCH | `/users/me/password` | Bearer | Change own password |
-| GET | `/users` | Admin | List all users (paginated) |
-| GET | `/users/:id` | Admin | Get user by ID |
-| PATCH | `/users/:id` | Bearer | Update user |
-| DELETE | `/users/:id` | Admin | Delete user |
+| POST | `/users/register` | None | Register |
+| POST | `/users/login` | None | Login -> JWT |
+| GET | `/users/me` | Bearer | Own profile |
+| PATCH | `/users/me/password` | Bearer | Change password |
+| GET | `/users` | Admin | List all (paginated) |
+| GET | `/users/:id` | Admin | Get by ID |
+| PATCH | `/users/:id` | Bearer | Update |
+| DELETE | `/users/:id` | Admin | Delete |
 
-### Example Requests
+### Examples
 
-#### Register
 ```bash
+# Register
 curl -X POST http://localhost:3000/api/v1/users/register \
   -H "Content-Type: application/json" \
-  -d '{
-    "name": "Alice",
-    "email": "alice@example.com",
-    "password": "Password1"
-  }'
-```
+  -d '{"name":"Alice","email":"alice@example.com","password":"Password1"}'
 
-#### Login
-```bash
+# Login
 curl -X POST http://localhost:3000/api/v1/users/login \
   -H "Content-Type: application/json" \
-  -d '{"email": "alice@example.com", "password": "Password1"}'
-```
+  -d '{"email":"alice@example.com","password":"Password1"}'
 
-#### Get Profile
-```bash
+# Profile
 curl http://localhost:3000/api/v1/users/me \
   -H "Authorization: Bearer <token>"
-```
 
-#### List Users (Admin)
-```bash
+# List users (admin)
 curl "http://localhost:3000/api/v1/users?page=1&limit=10&search=alice" \
   -H "Authorization: Bearer <admin_token>"
 ```
 
 ### Response Format
 
-All endpoints return a consistent JSON envelope:
-
 ```json
 {
   "success": true,
   "message": "Users retrieved",
-  "data": [...],
-  "meta": {
-    "page": 1,
-    "limit": 10,
-    "total": 42,
-    "totalPages": 5
-  }
+  "data": [],
+  "meta": { "page": 1, "limit": 10, "total": 42, "totalPages": 5 }
 }
 ```
-
-Error responses:
 
 ```json
 {
   "success": false,
   "message": "Validation failed",
-  "errors": [
-    { "field": "email", "msg": "Valid email required" }
-  ]
+  "errors": [{ "field": "email", "msg": "Valid email required" }]
 }
 ```
 
@@ -226,43 +166,38 @@ Error responses:
 ## Testing
 
 ```bash
-# Run all tests with coverage
-npm test
-
-# Watch mode during development
-npm run test:watch
-
-# Run specific test file
-npx jest tests/user.test.ts
+npm test                          # All tests + coverage
+npm run test:watch                # Watch mode
+npx jest tests/user.test.ts       # Single file
 ```
 
-Coverage thresholds enforced in CI: **80% lines, 75% functions**.
+Coverage enforced in CI: **80% lines / 75% functions**
 
-### Test Structure
-
-- `tests/setup.ts` — Connects to test MongoDB, clears collections between tests
-- `tests/helpers.ts` — `createUser()`, `loginUser()`, `authHeader()` utilities
-- `tests/health.test.ts` — Health endpoint smoke tests
-- `tests/user.test.ts` — Full auth flow + CRUD + RBAC scenarios (25+ cases)
+| File | Description |
+|---|---|
+| `tests/setup.ts` | MongoDB test connection + collection cleanup |
+| `tests/helpers.ts` | `createUser()`, `loginUser()`, `authHeader()` |
+| `tests/health.test.ts` | Health endpoint smoke tests |
+| `tests/user.test.ts` | Full auth, CRUD, RBAC  25+ cases |
 
 ---
 
-## CI/CD Pipeline (Jenkins)
+## CI/CD — Jenkins Pipeline
 
-The `Jenkinsfile` defines a **10-stage declarative pipeline**:
+10-stage declarative pipeline defined in `Jenkinsfile`:
 
 | Stage | Description |
 |---|---|
-| Checkout | Clone repo, compute image tag (`buildNum-gitSHA`) |
-| Install | `npm ci` with dependency caching |
-| Lint | ESLint — fails fast on errors |
+| Checkout | Clone + compute image tag (`buildNum-gitSHA`) |
+| Install | `npm ci` with dependency cache |
+| Lint | ESLint  fails fast |
 | Build | TypeScript compilation |
-| Test | Jest with ephemeral MongoDB container, publishes coverage |
+| Test | Jest + ephemeral MongoDB + coverage report |
 | Security Audit | `npm audit --audit-level=high` |
 | Docker Build | Multi-stage production image |
-| Docker Push | Push to registry (main + develop only) |
-| Deploy Staging | Auto-deploy to staging on `develop` branch |
-| Deploy Production | Manual approval gate → deploy to production on `main` |
+| Docker Push | Push to registry (`main` + `develop` only) |
+| Deploy Staging | Auto-deploy on `develop` |
+| Deploy Production | Manual approval gate -> `main` |
 
 ### Required Jenkins Credentials
 
@@ -274,23 +209,38 @@ The `Jenkinsfile` defines a **10-stage declarative pipeline**:
 
 ---
 
-## Project Patterns
+## Architecture
 
-**Layered architecture:** Routes → Controllers → Services → Repositories → Models. Each layer has a single responsibility.
+src/
+├── config/         # Env, DB connection
+├── middleware/     # Auth, error handler, rate limit
+├── modules/
+│   └── users/
+│       ├── user.model.ts
+│       ├── user.repository.ts
+│       ├── user.service.ts
+│       ├── user.controller.ts
+│       └── user.routes.ts
+├── utils/          # AppError, logger, response helpers
+└── app.ts
 
-**Error handling:** `AppError` class carries HTTP status codes. Global `errorHandler` middleware catches all errors including Mongoose and MongoDB driver errors.
-
-**Security:** Passwords hashed with bcrypt (12 rounds). JWT authentication. Role-based access control (`admin` / `user`). Helmet headers, CORS, and rate limiting applied globally.
-
-**Graceful shutdown:** SIGTERM/SIGINT close the HTTP server and MongoDB connection cleanly before exit.
+**Error handling:** `AppError` carries HTTP status. Global `errorHandler` catches all errors including Mongoose/MongoDB driver errors.
 
 ---
 
 ## Seed Data
 
-After running `npx ts-node scripts/seed.ts`:
+```bash
+npx ts-node scripts/seed.ts
+```
 
 | Email | Password | Role |
 |---|---|---|
 | admin@example.com | Admin@1234 | admin |
 | user@example.com | User@1234 | user |
+
+---
+
+## License
+
+[MIT](./LICENSE)
