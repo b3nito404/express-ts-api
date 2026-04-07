@@ -24,15 +24,15 @@
     "devops",
     "winston"
   ],
-  "author": "TonNom <tonemail@example.com>",
+  "author": "Bledje Benito",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ton-compte/express-typescript-api"
+    "url": "https://github.com/b3nito404/express-ts-api"
   },
-  "homepage": "https://github.com/ton-compte/express-typescript-api#readme",
+  "homepage": "https://github.com/b3nito404/express-ts-api#readme",
   "bugs": {
-    "url": "https://github.com/ton-compte/express-typescript-api/issues"
+    "url": "https://github.com/b3nito404/express-ts-api/issues"
   },
   "engines": {
     "node": ">=20"
